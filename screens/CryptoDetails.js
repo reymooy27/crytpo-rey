@@ -12,6 +12,9 @@ const CryptoDetails = ({navigation,route}) => {
 
   const {colors} = useTheme()
 
+  const abortController = new AbortController()
+  const signal = abortController.signal
+
   const [data, setData] = useState([])
   const [marketData, setMarketData] = useState([])
   const [chartTime, setChartTime] = useState('1');
@@ -20,13 +23,13 @@ const CryptoDetails = ({navigation,route}) => {
   const id = route.params.id
 
   const fetchData = async ()=>{
-    await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`)
+    await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`, {signal})
     .then(res=> setData(res.data))
     .catch(err=> console.log(err))
   }
 
   const fetchMarketData = async ()=>{
-    await axios.get(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${chartTime}`)
+    await axios.get(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${chartTime}`, {signal})
     .then(res=> setMarketData(res.data))
     .catch(err=> console.log(err))
   }
@@ -41,14 +44,11 @@ const CryptoDetails = ({navigation,route}) => {
   }
 
   useEffect(() => {
-    let mounted = true
-    if(mounted){
       fetchData()
       setChartTime('1')
       fetchMarketData()
-    }
 
-    return ()=> mounted = false
+    return ()=> abortController.abort()
   }, [chartTime])
 
   useLayoutEffect(() => {
@@ -103,22 +103,22 @@ const CryptoDetails = ({navigation,route}) => {
 
       {/* button */}
         <View style={{marginVertical: 20, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-evenly'}}>
-          <TouchableOpacity onPress={()=> setChartTime('1')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: 'blue'}}>
+          <TouchableOpacity onPress={()=> setChartTime('1')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: '#0057FF'}}>
             <Text style={styles.text}>1H</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=> setChartTime('1')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: 'blue'}}>
+          <TouchableOpacity onPress={()=> setChartTime('1')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: '#0057FF'}}>
             <Text style={styles.text}>1D</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=> setChartTime('30')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: 'blue'}}>
+          <TouchableOpacity onPress={()=> setChartTime('30')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: '#0057FF'}}>
             <Text style={styles.text}>1M</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=> setChartTime('180')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: 'blue'}}>
+          <TouchableOpacity onPress={()=> setChartTime('180')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: '#0057FF'}}>
             <Text style={styles.text}>6M</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=> setChartTime('365')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: 'blue'}}>
+          <TouchableOpacity onPress={()=> setChartTime('365')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: '#0057FF'}}>
             <Text style={styles.text}>1Y</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=> setChartTime('max')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: 'blue'}}>
+          <TouchableOpacity onPress={()=> setChartTime('max')} style={{width: 50,height: 30, justifyContent: 'center', alignItems: 'center', borderRadius: 15, backgroundColor: '#0057FF'}}>
             <Text style={styles.text}>ALL</Text>
           </TouchableOpacity>
         </View>

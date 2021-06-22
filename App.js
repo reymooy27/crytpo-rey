@@ -13,9 +13,23 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Order from './screens/Order';
 import Wallet from './screens/Wallet';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import store from './redux/store'
+import { Provider, useDispatch } from 'react-redux'
+import { setInputOpen } from './redux/reducers/appSlice';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const AppWraper = ()=>{  
+  return(
+    <Provider store={store}>
+      <App/>
+    </Provider>
+  )
+}
+
+export default AppWraper
+
 
 const App = () => {
 
@@ -43,25 +57,36 @@ const App = () => {
         headerTintColor: 'white'
       }}
     >
-      <Stack.Screen options={{headerShown: false}} name='Home' component={HomeTabs}/>
-      <Stack.Screen name='CryptoDetails' component={CryptoDetails}/>
-    </Stack.Navigator>
+        <Stack.Screen options={{headerShown: false}} name='Home' component={HomeTabs}/>
+        <Stack.Screen name='CryptoDetails' component={CryptoDetails}/>
+      </Stack.Navigator>
     </NavigationContainer>
   )
 }
 
-export default App
-
 const HomeStack = createStackNavigator()
 const HomeStackScreen = ()=>{
   return(
-    <HomeStack.Navigator screenOptions={{headerTintColor: 'white', headerTitleAlign: 'center'}}>
-      <HomeStack.Screen name='Home' component={Home}/>
+    <HomeStack.Navigator screenOptions={{title: 'Default Portofolio',headerTitleStyle: {fontSize: 16}, headerTintColor: 'white', headerTitleAlign: 'center'}}>
+      <HomeStack.Screen name='Home' component={Home}
+      options={{
+        headerRight: ()=>
+        <TouchableOpacity style={{marginRight: 20}}>
+          <Ionicons name='settings-outline' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+        headerLeft: ()=> 
+        <TouchableOpacity style={{marginLeft: 20}}>
+          <Ionicons name='stats-chart' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+      }}
+      />
     </HomeStack.Navigator>
   )
 }
 const MarketStack = createStackNavigator()
 const MarketStackScreen = ()=>{
+  const dispatch = useDispatch()
+
   return(
     <MarketStack.Navigator screenOptions={{headerTitleStyle: {fontSize: 16} ,headerTintColor: 'white', headerTitleAlign: 'center'}}>
       <MarketStack.Screen name='Market' component={Market}
@@ -71,7 +96,7 @@ const MarketStackScreen = ()=>{
           <Ionicons name='stats-chart' size={20} color='#666666'/>
         </TouchableOpacity> ,
         headerLeft: ()=> 
-        <TouchableOpacity style={{marginLeft: 20}}>
+        <TouchableOpacity onPress={()=> dispatch(setInputOpen())} style={{marginLeft: 20}}>
           <Ionicons name='search' size={20} color='#666666'/>
         </TouchableOpacity> ,
       }}

@@ -1,12 +1,20 @@
 import React, {useEffect, useState} from 'react'
-import { StyleSheet, View, RefreshControl, FlatList, TouchableOpacity, Text } from 'react-native'
+import { StyleSheet, View, RefreshControl, FlatList, TouchableOpacity, Text, TextInput } from 'react-native'
 import axios from 'axios'
 import Coin from '../components/Coin'
+import { selectInputOpen } from '../redux/reducers/appSlice'
+import { useSelector } from 'react-redux'
 
 const Market = ({ navigation }) => {
 
+  const abortController = new AbortController()
+  const signal = abortController.signal
+
   const [data, setData] = useState([]);
   const [refresh, setRefresh] = useState(false)
+  const [input, setInput] = useState('');
+
+  const inputOpen = useSelector(selectInputOpen)
 
   const handleRefresh = ()=>{
     setRefresh(true)
@@ -32,7 +40,7 @@ const Market = ({ navigation }) => {
   }
 
   const fetchData = async ()=>{
-    await axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+    await axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false', {signal})
     .then(res=>{
       setData(res.data)
     })
@@ -42,32 +50,53 @@ const Market = ({ navigation }) => {
   }
   
   useEffect(() => {
-    let mounted = true
-    if(mounted){
-      fetchData() 
-    }
-    return () => {
-      mounted = false
-    };
+    fetchData() 
+
+    return () => abortController.abort()
   }, []);
+
+  const renderItem = ({item})=> 
+    <Coin
+      onPress={()=> navigation.navigate('CryptoDetails', {id: item?.id})} 
+      rank={item?.market_cap_rank}
+      name={item?.name}
+      id={item?.id}
+      symbol={item?.symbol?.toUpperCase()}
+      price={item?.current_price}
+      image={item?.image}
+      marketCap={item?.market_cap}
+      changes={item?.price_change_percentage_24h}
+    />
 
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 20, marginTop: 10}}>
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity onPress={sortRank} style={{marginRight: 10,backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
-            <Text style={styles.text}>Rank</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={sortVolume} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
-            <Text style={styles.text}>Volume</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{alignItems: 'flex-end'}}>
-          <TouchableOpacity onPress={sort24h} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
-            <Text style={styles.text}>24 Hours</Text>
-          </TouchableOpacity>
-        </View>
+      {/* search input */}
+      <View style={{paddingHorizontal: 20, display: inputOpen ? 'flex' : 'none'}}>
+        <TextInput style={[styles.text,{height: 60, fontSize: 32}]} value={input} placeholder='Search' placeholderTextColor='#666666' onChangeText={text=> setInput(text)}/>
       </View>
+
+      {/* sort menu */}
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 20, marginTop: 10}}>
+        {
+          <>
+          <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity onPress={sortRank} style={{marginRight: 10,backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+              <Text style={styles.text}>Rank</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={sortVolume} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+              <Text style={styles.text}>Volume</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{alignItems: 'flex-end'}}>
+            <TouchableOpacity onPress={sort24h} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+              <Text style={styles.text}>24 Hours</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+        }
+      </View>
+
+      {/* crypto list */}
       <FlatList 
         style={{paddingHorizontal: 20}}
         data={data} 
@@ -79,19 +108,8 @@ const Market = ({ navigation }) => {
           />
         }
         initialNumToRender={10}
-        renderItem={({item})=> 
-          <Coin
-            onPress={()=> navigation.navigate('CryptoDetails', {id: item?.id})} 
-            rank={item?.market_cap_rank}
-            name={item?.name}
-            id={item?.id}
-            symbol={item?.symbol?.toUpperCase()}
-            price={item?.current_price}
-            image={item?.image}
-            marketCap={item?.market_cap}
-            changes={item?.price_change_percentage_24h}
-          />
-        }/>
+        renderItem={renderItem}
+        />
     </View>
   )
 }

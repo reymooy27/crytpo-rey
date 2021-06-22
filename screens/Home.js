@@ -1,10 +1,12 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState, useRef } from 'react';
-import { FlatList, StyleSheet, View, RefreshControl} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, View, RefreshControl, Text, TouchableOpacity} from 'react-native';
 import axios from 'axios'
-import CryptoList from '../components/CryptoList'
+import Coin from '../components/Coin'
 
 export default function Home({navigation}) {
+
+  const abortController = new AbortController()
+  const signal = abortController.signal
 
   const [data, setData] = useState([]);
   const [refresh, setRefresh] = useState(false)
@@ -18,9 +20,9 @@ export default function Home({navigation}) {
   }
 
   const fetchData = async ()=>{
-    await axios.get('https://crypto-rey.herokuapp.com/')
+    await axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false', {signal})
     .then(res=>{
-      setData(res.data.data)
+      setData(res.data)
     })
     .catch(err=>{
       console.log(err)
@@ -28,49 +30,64 @@ export default function Home({navigation}) {
   }
 
   useEffect(() => {
-    let mounted = true
-    if(mounted){
-      fetchData() 
-    }
-    return () => {
-      mounted = false
-    };
+    fetchData() 
+
+    return () => abortController.abort()
   }, []);
 
+  const renderItem = ({item})=> 
+    <Coin
+      onPress={()=> navigation.navigate('CryptoDetails', {id: item?.id})} 
+      rank={item?.market_cap_rank}
+      name={item?.name}
+      id={item?.id}
+      symbol={item?.symbol?.toUpperCase()}
+      price={item?.current_price}
+      image={item?.image}
+      marketCap={item?.market_cap}
+      changes={item?.price_change_percentage_24h}
+    />
 
   return (
     <View style={styles.container}>
+      {/* header */}
+      <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20, marginVertical: 20}}>
+        <View>
+          <Text style={[styles.text, {fontSize: 32}]}>$2,3423</Text>
+          <Text style={[styles.text,{color: '#11C6AA'}]}>+$8734,2
+            <Text style={[styles.text,{color: '#11C6AA'}]}>{` (+45%)`}</Text>
+          </Text>
+        </View>
+      </View>
+
+      {/* sort menu */}
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 20, marginTop: 10}}>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity style={{marginRight: 10,backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+            <Text style={styles.text}>Highest Holdings</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{alignItems: 'flex-end'}}>
+          <TouchableOpacity style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+            <Text style={styles.text}>24 Hours</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* crypto list */}
       <FlatList 
-        data={Object.keys(data)} 
-        keyExtractor={item => item}
+        style={{paddingHorizontal: 20}}
+        data={data} 
+        keyExtractor={item => item?.id}
         refreshControl={
           <RefreshControl
             refreshing={refresh}
             onRefresh={handleRefresh}
           />
         }
+        renderItem={renderItem}
         initialNumToRender={10}
-        // ItemSeparatorComponent={()=> <View style={{marginHorizontal: 10 ,borderBottomColor: '#70849D', borderBottomWidth: 0.3}}></View>}
-        renderItem={({item})=> 
-          <CryptoList
-          onPress={()=> navigation.navigate('CryptoDetails',
-          { id: data[item]?.id, 
-            name: data[item]?.name, 
-            symbol: data[item]?.symbol,
-            price: data[item]?.quote?.USD?.price,
-            percentchange24: data[item]?.quote?.USD?.percent_change_24h,
-            marketCap: data[item]?.quote?.USD?.market_cap
-          })} 
-          rank={data[item]?.cmc_rank}
-          name={data[item]?.name}
-          id={data[item]?.id}
-          symbol={data[item]?.symbol}
-          price={data[item]?.quote?.USD?.price}
-          marketCap={data[item]?.quote?.USD?.market_cap}
-          percentchange24={data[item]?.quote?.USD?.percent_change_24h}
-          />
-        }/>
-      <StatusBar style="light" />
+        />
     </View>
   );
 }
@@ -81,4 +98,8 @@ const styles = StyleSheet.create({
     // backgroundColor: '#21293A',
     justifyContent: 'center',
   },
+  text:{
+    color: 'white',
+    fontFamily: 'OpenSans'
+  }
 });
