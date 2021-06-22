@@ -1,21 +1,138 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react'
+import { StyleSheet, TouchableOpacity} from 'react-native'
+import Home from './screens/Home'
+import Market from './screens/Market'
+import CryptoDetails from './screens/CryptoDetails'
+import {DefaultTheme} from '@react-navigation/native'
+import * as Font from "expo-font";
+import { useFonts } from "@use-expo/font";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Order from './screens/Order';
+import Wallet from './screens/Wallet';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function App() {
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const App = () => {
+
+  const [loaded] = useFonts({
+    OpenSans: require('./assets/fonts/OpenSans-Bold.ttf'),
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
+  const appTheme = {
+    ...DefaultTheme,
+    colors:{
+      background: '#0E0F18',
+    }
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <NavigationContainer theme={appTheme}>
+      <Stack.Navigator
+      initialRouteName='Home'
+      screenOptions={{
+        animationEnabled: false,
+        headerTintColor: 'white'
+      }}
+    >
+      <Stack.Screen options={{headerShown: false}} name='Home' component={HomeTabs}/>
+      <Stack.Screen name='CryptoDetails' component={CryptoDetails}/>
+    </Stack.Navigator>
+    </NavigationContainer>
+  )
+}
+
+export default App
+
+const HomeStack = createStackNavigator()
+const HomeStackScreen = ()=>{
+  return(
+    <HomeStack.Navigator screenOptions={{headerTintColor: 'white', headerTitleAlign: 'center'}}>
+      <HomeStack.Screen name='Home' component={Home}/>
+    </HomeStack.Navigator>
+  )
+}
+const MarketStack = createStackNavigator()
+const MarketStackScreen = ()=>{
+  return(
+    <MarketStack.Navigator screenOptions={{headerTitleStyle: {fontSize: 16} ,headerTintColor: 'white', headerTitleAlign: 'center'}}>
+      <MarketStack.Screen name='Market' component={Market}
+      options={{
+        headerRight: ()=>
+        <TouchableOpacity style={{marginRight: 20}}>
+          <Ionicons name='stats-chart' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+        headerLeft: ()=> 
+        <TouchableOpacity style={{marginLeft: 20}}>
+          <Ionicons name='search' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+      }}
+      />
+    </MarketStack.Navigator>
+  )
+}
+
+const OrderStack = createStackNavigator()
+const OrderStackScreen = ()=>{
+  return(
+    <OrderStack.Navigator screenOptions={{headerTintColor: 'white', headerTitleAlign: 'center'}}>
+      <OrderStack.Screen name='Order' component={Order}/>
+    </OrderStack.Navigator>
+  )
+}
+
+const WalletStack = createStackNavigator()
+const WalletStackScreen = ()=>{
+  return(
+    <WalletStack.Navigator screenOptions={{headerTintColor: 'white', headerTitleAlign: 'center'}}>
+      <WalletStack.Screen name='Wallet' component={Wallet}/>
+    </WalletStack.Navigator>
+  )
+}
+
+const HomeTabs = ()=>{
+  return(
+    <Tab.Navigator initialRouteName='Home' 
+    screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused
+                ? 'home'
+                : 'home-outline';
+            } else if (route.name === 'Market') {
+              iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+            }
+            else if (route.name === 'Order') {
+              iconName = focused ? 'newspaper' : 'newspaper-outline';
+            }
+            else if (route.name === 'Wallet') {
+              iconName = focused ? 'wallet' : 'wallet-outline';
+            }
+
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+        })}
+    tabBarOptions={{activeTintColor: '#0057FF', inactiveTintColor: '#666666', showLabel: false, style:{backgroundColor: '#0E0F18', borderColor: '#0E0F18'}}}
+    >
+      <Tab.Screen name="Home" component={HomeStackScreen}/>
+      <Tab.Screen name="Market" component={MarketStackScreen}/>
+      <Tab.Screen name="Order" component={OrderStackScreen}/>
+      <Tab.Screen name="Wallet" component={WalletStackScreen}/>
+    </Tab.Navigator>
+  )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+})
