@@ -1,11 +1,15 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, ScrollView } from 'react-native'
+import Transaction from '../components/Transaction'
 
-const Order = () => {
+const Order = ({navigation}) => {
   return (
-    <View>
-      <Text>Order</Text>
-    </View>
+    <ScrollView contentContainerStyle={{alignItems: 'center', paddingHorizontal: 20}}>
+      <Transaction onPress={()=> navigation.navigate('TransactionDetail', {name: '#343545 via Binance'})}/>
+      <Transaction buy onPress={()=> navigation.navigate('TransactionDetail', {name: '#343545 via Binance', buy: true})}/>
+      <Transaction buy onPress={()=> navigation.navigate('TransactionDetail', {name: '#343545 via Binance', buy: true})}/>
+      <Transaction onPress={()=> navigation.navigate('TransactionDetail', {name: '#343545 via Binance'})}/>
+    </ScrollView>
   )
 }
 

@@ -16,6 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import store from './redux/store'
 import { Provider, useDispatch } from 'react-redux'
 import { setInputOpen } from './redux/reducers/appSlice';
+import TransactionDetail from './screens/TransactionDetail';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -59,6 +60,19 @@ const App = () => {
     >
         <Stack.Screen options={{headerShown: false}} name='Home' component={HomeTabs}/>
         <Stack.Screen name='CryptoDetails' component={CryptoDetails}/>
+        <Stack.Screen name='TransactionDetail' component={TransactionDetail}
+          options={{
+            title: 'Transaction',
+            headerTitleStyle:{
+              fontSize: 16
+            },
+            headerTitleAlign: 'center',
+            headerRight: ()=>
+            <TouchableOpacity style={{marginRight: 20}}>
+              <Ionicons name='trash-outline' size={20} color='#666666'/>
+            </TouchableOpacity> 
+          }}
+          />
       </Stack.Navigator>
     </NavigationContainer>
   )
@@ -108,7 +122,7 @@ const MarketStackScreen = ()=>{
 const OrderStack = createStackNavigator()
 const OrderStackScreen = ()=>{
   return(
-    <OrderStack.Navigator screenOptions={{headerTintColor: 'white', headerTitleAlign: 'center'}}>
+    <OrderStack.Navigator screenOptions={{animationEnabled: false ,title: 'Transactions',headerTitleStyle: {fontSize: 16},headerTintColor: 'white', headerTitleAlign: 'center'}}>
       <OrderStack.Screen name='Order' component={Order}/>
     </OrderStack.Navigator>
   )
@@ -148,7 +162,7 @@ const HomeTabs = ()=>{
             return <Ionicons name={iconName} size={size} color={color} />;
           },
         })}
-    tabBarOptions={{activeTintColor: '#0057FF', inactiveTintColor: '#666666', showLabel: false, style:{backgroundColor: '#0E0F18', borderColor: '#0E0F18'}}}
+    tabBarOptions={{keyboardHidesTabBar: true,activeTintColor: '#0057FF', inactiveTintColor: '#666666', showLabel: false, style:{backgroundColor: '#0E0F18', borderColor: '#0E0F18'}}}
     >
       <Tab.Screen name="Home" component={HomeStackScreen}/>
       <Tab.Screen name="Market" component={MarketStackScreen}/>

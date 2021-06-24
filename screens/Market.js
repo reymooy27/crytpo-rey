@@ -70,31 +70,26 @@ const Market = ({ navigation }) => {
 
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>
-      {/* search input */}
+    {inputOpen ? 
       <View style={{paddingHorizontal: 20, display: inputOpen ? 'flex' : 'none'}}>
-        <TextInput style={[styles.text,{height: 60, fontSize: 32}]} value={input} placeholder='Search' placeholderTextColor='#666666' onChangeText={text=> setInput(text)}/>
+        <TextInput autoFocus style={[styles.text,{height: 60, fontSize: 32}]} value={input} placeholder='Search' placeholderTextColor='#666666' onChangeText={text=> setInput(text)}/>
       </View>
-
-      {/* sort menu */}
+      :
       <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 20, marginTop: 10}}>
-        {
-          <>
-          <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity onPress={sortRank} style={{marginRight: 10,backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
-              <Text style={styles.text}>Rank</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={sortVolume} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
-              <Text style={styles.text}>Volume</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{alignItems: 'flex-end'}}>
-            <TouchableOpacity onPress={sort24h} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
-              <Text style={styles.text}>24 Hours</Text>
-            </TouchableOpacity>
-          </View>
-        </>
-        }
-      </View>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity onPress={sortRank} style={{marginRight: 10,backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+            <Text style={styles.text}>Rank</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={sortVolume} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+            <Text style={styles.text}>Volume</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{alignItems: 'flex-end'}}>
+          <TouchableOpacity onPress={sort24h} style={{backgroundColor: '#666666', padding: 5,paddingHorizontal: 10, borderRadius: 5}}>
+            <Text style={styles.text}>24 Hours</Text>
+          </TouchableOpacity>
+        </View>
+      </View>}
 
       {/* crypto list */}
       <FlatList 
