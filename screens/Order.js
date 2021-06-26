@@ -1,8 +1,18 @@
-import React from 'react'
+import React, {useLayoutEffect} from 'react'
 import { StyleSheet, Text, ScrollView } from 'react-native'
 import Transaction from '../components/Transaction'
 
 const Order = ({navigation}) => {
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Transactions',
+      headerTitleStyle: {fontSize: 16},
+      headerTintColor: 'white', 
+      headerTitleAlign: 'center'
+    })
+  }, [])
+
   return (
     <ScrollView contentContainerStyle={{alignItems: 'center', paddingHorizontal: 20}}>
       <Transaction onPress={()=> navigation.navigate('TransactionDetail', {name: '#343545 via Binance'})}/>

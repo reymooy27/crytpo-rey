@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useLayoutEffect} from 'react'
 import { StyleSheet, View, RefreshControl, FlatList, TouchableOpacity, Text, TextInput } from 'react-native'
 import axios from 'axios'
 import Coin from '../components/Coin'
-import { selectInputOpen } from '../redux/reducers/appSlice'
-import { useSelector } from 'react-redux'
+import { selectInputOpen, setInputOpen } from '../redux/reducers/appSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const Market = ({ navigation }) => {
 
@@ -13,6 +14,8 @@ const Market = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [refresh, setRefresh] = useState(false)
   const [input, setInput] = useState('');
+
+  const dispatch = useDispatch()
 
   const inputOpen = useSelector(selectInputOpen)
 
@@ -48,6 +51,22 @@ const Market = ({ navigation }) => {
       console.log(err)
     })
   }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitleStyle: {fontSize: 16},
+      headerTintColor: 'white', 
+      headerTitleAlign: 'center',
+      headerRight: ()=>
+        <TouchableOpacity style={{marginRight: 20}}>
+          <Ionicons name='stats-chart' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+      headerLeft: ()=> 
+        <TouchableOpacity onPress={()=> dispatch(setInputOpen())} style={{marginLeft: 20}}>
+          <Ionicons name='search' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+    })
+  }, [])
   
   useEffect(() => {
     fetchData() 

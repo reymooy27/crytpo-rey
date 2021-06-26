@@ -2,21 +2,20 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react'
-import { StyleSheet, TouchableOpacity} from 'react-native'
+import { StyleSheet} from 'react-native'
 import Home from './screens/Home'
 import Market from './screens/Market'
 import CryptoDetails from './screens/CryptoDetails'
 import {DefaultTheme} from '@react-navigation/native'
-import * as Font from "expo-font";
 import { useFonts } from "@use-expo/font";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Order from './screens/Order';
-import Wallet from './screens/Wallet';
+import Settings from './screens/Settings';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import store from './redux/store'
-import { Provider, useDispatch } from 'react-redux'
-import { setInputOpen } from './redux/reducers/appSlice';
+import { Provider } from 'react-redux'
 import TransactionDetail from './screens/TransactionDetail';
+import DeleteModal from './screens/DeleteModal';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,19 +59,8 @@ const App = () => {
     >
         <Stack.Screen options={{headerShown: false}} name='Home' component={HomeTabs}/>
         <Stack.Screen name='CryptoDetails' component={CryptoDetails}/>
-        <Stack.Screen name='TransactionDetail' component={TransactionDetail}
-          options={{
-            title: 'Transaction',
-            headerTitleStyle:{
-              fontSize: 16
-            },
-            headerTitleAlign: 'center',
-            headerRight: ()=>
-            <TouchableOpacity style={{marginRight: 20}}>
-              <Ionicons name='trash-outline' size={20} color='#666666'/>
-            </TouchableOpacity> 
-          }}
-          />
+        <Stack.Screen name='TransactionDetail' component={TransactionDetail}/>
+        <Stack.Screen name='DeleteModal' component={DeleteModal}/>
       </Stack.Navigator>
     </NavigationContainer>
   )
@@ -81,40 +69,16 @@ const App = () => {
 const HomeStack = createStackNavigator()
 const HomeStackScreen = ()=>{
   return(
-    <HomeStack.Navigator screenOptions={{title: 'Default Portofolio',headerTitleStyle: {fontSize: 16}, headerTintColor: 'white', headerTitleAlign: 'center'}}>
-      <HomeStack.Screen name='Home' component={Home}
-      options={{
-        headerRight: ()=>
-        <TouchableOpacity style={{marginRight: 20}}>
-          <Ionicons name='settings-outline' size={20} color='#666666'/>
-        </TouchableOpacity> ,
-        headerLeft: ()=> 
-        <TouchableOpacity style={{marginLeft: 20}}>
-          <Ionicons name='stats-chart' size={20} color='#666666'/>
-        </TouchableOpacity> ,
-      }}
-      />
+    <HomeStack.Navigator>
+      <HomeStack.Screen name='Home' component={Home}/>
     </HomeStack.Navigator>
   )
 }
 const MarketStack = createStackNavigator()
 const MarketStackScreen = ()=>{
-  const dispatch = useDispatch()
-
   return(
-    <MarketStack.Navigator screenOptions={{headerTitleStyle: {fontSize: 16} ,headerTintColor: 'white', headerTitleAlign: 'center'}}>
-      <MarketStack.Screen name='Market' component={Market}
-      options={{
-        headerRight: ()=>
-        <TouchableOpacity style={{marginRight: 20}}>
-          <Ionicons name='stats-chart' size={20} color='#666666'/>
-        </TouchableOpacity> ,
-        headerLeft: ()=> 
-        <TouchableOpacity onPress={()=> dispatch(setInputOpen())} style={{marginLeft: 20}}>
-          <Ionicons name='search' size={20} color='#666666'/>
-        </TouchableOpacity> ,
-      }}
-      />
+    <MarketStack.Navigator>
+      <MarketStack.Screen name='Market' component={Market}/>
     </MarketStack.Navigator>
   )
 }
@@ -122,18 +86,18 @@ const MarketStackScreen = ()=>{
 const OrderStack = createStackNavigator()
 const OrderStackScreen = ()=>{
   return(
-    <OrderStack.Navigator screenOptions={{animationEnabled: false ,title: 'Transactions',headerTitleStyle: {fontSize: 16},headerTintColor: 'white', headerTitleAlign: 'center'}}>
+    <OrderStack.Navigator>
       <OrderStack.Screen name='Order' component={Order}/>
     </OrderStack.Navigator>
   )
 }
 
-const WalletStack = createStackNavigator()
-const WalletStackScreen = ()=>{
+const SettingsStack = createStackNavigator()
+const SettingsStackScreen = ()=>{
   return(
-    <WalletStack.Navigator screenOptions={{headerTintColor: 'white', headerTitleAlign: 'center'}}>
-      <WalletStack.Screen name='Wallet' component={Wallet}/>
-    </WalletStack.Navigator>
+    <SettingsStack.Navigator screenOptions={{headerTintColor: 'white', headerTitleAlign: 'center'}}>
+      <SettingsStack.Screen name='Settings' component={Settings}/>
+    </SettingsStack.Navigator>
   )
 }
 
@@ -154,8 +118,8 @@ const HomeTabs = ()=>{
             else if (route.name === 'Order') {
               iconName = focused ? 'newspaper' : 'newspaper-outline';
             }
-            else if (route.name === 'Wallet') {
-              iconName = focused ? 'wallet' : 'wallet-outline';
+            else if (route.name === 'Settings') {
+              iconName = focused ? 'settings' : 'settings-outline';
             }
 
             // You can return any component that you like here!
@@ -167,7 +131,7 @@ const HomeTabs = ()=>{
       <Tab.Screen name="Home" component={HomeStackScreen}/>
       <Tab.Screen name="Market" component={MarketStackScreen}/>
       <Tab.Screen name="Order" component={OrderStackScreen}/>
-      <Tab.Screen name="Wallet" component={WalletStackScreen}/>
+      <Tab.Screen name="Settings" component={SettingsStackScreen}/>
     </Tab.Navigator>
   )
 }

@@ -12,13 +12,21 @@ const TransactionDetail = ({navigation, route}) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: name
+      title: name,
+      headerTitleStyle:{
+        fontSize: 16
+      },
+      headerTitleAlign: 'center',
+      headerRight: ()=>
+        <TouchableOpacity onPress={()=> navigation.navigate('DeleteModal')} style={{marginRight: 20}}>
+          <Ionicons name='trash-outline' size={20} color='#666666'/>
+        </TouchableOpacity> 
     })
   }, [])
 
   return (
     <KeyboardAvoidingView keyboardVerticalOffset={Header.HEIGHT + 184} behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1, justifyContent: 'center'}}>
-      <ScrollView contentContainerStyle={{flex: 1}}>
+      <ScrollView contentContainerStyle={{}}>
         <TouchableOpacity>
           <View style={{height: 70, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center'}}>
             <View>

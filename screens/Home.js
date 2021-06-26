@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { FlatList, StyleSheet, View, RefreshControl, Text, TouchableOpacity} from 'react-native';
 import axios from 'axios'
 import Coin from '../components/Coin'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 export default function Home({navigation}) {
 
@@ -28,6 +29,23 @@ export default function Home({navigation}) {
       console.log(err)
     })
   }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Default Portofolio',
+      headerTitleStyle: {fontSize: 16}, 
+      headerTintColor: 'white', 
+      headerTitleAlign: 'center',
+      headerRight: ()=>
+        <TouchableOpacity style={{marginRight: 20}}>
+          <Ionicons name='settings-outline' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+        headerLeft: ()=> 
+        <TouchableOpacity style={{marginLeft: 20}}>
+          <Ionicons name='stats-chart' size={20} color='#666666'/>
+        </TouchableOpacity> ,
+    })
+  }, [])
 
   useEffect(() => {
     fetchData() 
